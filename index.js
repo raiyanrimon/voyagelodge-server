@@ -26,6 +26,7 @@ const client = new MongoClient(uri, {
 async function run() {
   try {
     const roomCollection = client.db('voyagelodge').collection('rooms')
+    const bookingsCollection = client.db('voyagelodge').collection('bookings')
 
     app.get('/rooms', async (req, res)=>{
         const result = await roomCollection.find().toArray()
@@ -34,6 +35,15 @@ async function run() {
     app.get('/rooms/:name', async(req, res)=>{
         const name = req.params.name
         const result = await roomCollection.findOne({name})
+        res.send(result)
+    })
+    app.post('/bookings', async(req,res)=>{
+        const bookings = req.body
+        const result = await bookingsCollection.insertOne(bookings)
+        res.send(result)
+    })
+    app.get('/bookings', async(req,res)=>{
+        const result = await bookingsCollection.find().toArray()
         res.send(result)
     })
     // Connect the client to the server	(optional starting in v4.7)
