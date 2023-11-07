@@ -32,9 +32,10 @@ async function run() {
         const result = await roomCollection.find().toArray()
         res.send(result)
     })
-    app.get('/rooms/:name', async(req, res)=>{
-        const name = req.params.name
-        const result = await roomCollection.findOne({name})
+    app.get('/rooms/:id', async(req, res)=>{
+        const id = req.params.id
+        const query = {_id : new ObjectId(id)}
+        const result = await roomCollection.findOne(query)
         res.send(result)
     })
     app.post('/bookings', async(req,res)=>{
@@ -45,6 +46,12 @@ async function run() {
     app.get('/bookings', async(req,res)=>{
         const result = await bookingsCollection.find().toArray()
         res.send(result)
+    })
+    app.delete('/bookings/:id', async(req, res)=>{
+      const id = req.params.id
+      const query = {_id : new ObjectId(id)}
+      const result = await bookingsCollection.deleteOne(query)
+      res.send(result)
     })
     // Connect the client to the server	(optional starting in v4.7)
     // await client.connect();
