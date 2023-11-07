@@ -1,6 +1,7 @@
 const express = require('express');
 const cors = require('cors');
 const jwt = require('jsonwebtoken')
+const cookieParser = require('cookie-parser')
 const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 require('dotenv').config()
 const app = express()
@@ -46,6 +47,12 @@ async function run() {
         secure: true,
         sameSite: 'none'
       }).send({success: true})
+    })
+
+    app.post('/logout', async (req,res)=>{
+      const user = req.body
+      console.log('logging out', user);
+      res.clearCookie('token', {maxAge: 0}).send({success: true})
     })
 
     app.get('/rooms', async (req, res)=>{
