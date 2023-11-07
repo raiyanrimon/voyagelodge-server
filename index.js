@@ -27,6 +27,7 @@ async function run() {
   try {
     const roomCollection = client.db('voyagelodge').collection('rooms')
     const bookingsCollection = client.db('voyagelodge').collection('bookings')
+    const reviewsCollection = client.db('voyagelodge').collection('reviews')
 
     app.get('/rooms', async (req, res)=>{
         const result = await roomCollection.find().toArray()
@@ -76,6 +77,20 @@ async function run() {
       
       const filter = {_id: new ObjectId(id)}
       const result = await bookingsCollection.updateOne(filter, booking, options)
+      res.send(result)
+    })
+    app.post('/reviews', async(req, res)=>{
+      const reviews = req.body
+      const result = await reviewsCollection.insertOne(reviews)
+      res.send(result)
+    })
+    app.get('/reviews', async (req,res)=>{
+      const result = await reviewsCollection.find().toArray()
+      res.send(result)
+    })
+    app.get('/reviews/:name', async (req, res)=>{
+      const name = req.params.name
+      const result = await reviewsCollection.find({name}).toArray()
       res.send(result)
     })
     // Connect the client to the server	(optional starting in v4.7)
