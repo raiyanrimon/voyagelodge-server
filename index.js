@@ -13,7 +13,7 @@ app.use(express.json())
 
 
 const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster0.hif0lwq.mongodb.net/?retryWrites=true&w=majority`;
-console.log(uri);
+
 // Create a MongoClient with a MongoClientOptions object to set the Stable API version
 const client = new MongoClient(uri, {
   serverApi: {
@@ -51,6 +51,31 @@ async function run() {
       const id = req.params.id
       const query = {_id : new ObjectId(id)}
       const result = await bookingsCollection.deleteOne(query)
+      res.send(result)
+    })
+    app.get('/bookings/:id', async(req, res)=>{
+      const id = req.params.id
+      const query = {_id : new ObjectId(id)}
+      const result = await bookingsCollection.findOne(query)
+      res.send(result)
+    })
+    app.put('/bookings/:id', async(req, res)=>{
+      const id = req.params.id
+      const options = {upsert: true}
+      const updatedBooking = req.body
+      const booking = {
+        $set: {
+          name: updatedBooking.name,
+          email: updatedBooking.email,
+          customer: updatedBooking.customer,
+          date: updatedBooking.date,
+          img1: updatedBooking.img1,
+          offer_price: updatedBooking.offer_price
+        }
+      };
+      
+      const filter = {_id: new ObjectId(id)}
+      const result = await bookingsCollection.updateOne(filter, booking, options)
       res.send(result)
     })
     // Connect the client to the server	(optional starting in v4.7)
