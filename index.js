@@ -69,16 +69,20 @@ async function run() {
       const token = jwt.sign(user, process.env.ACCESS_SECRET_TOKEN , {expiresIn: '1h'})
       res.cookie('token', token, {
         httpOnly: true,
-        secure: true,
-        sameSite: 'none'
+        secure: process.env.NODE_ENV === 'production', 
+        sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'strict',
       }).send({success: true})
     })
 
-    app.post('/logout', async (req,res)=>{
-      const user = req.body
+    app.post('/logout', async (req, res) => {
+      const user = req.body;
       console.log('logging out', user);
-      res.clearCookie('token', {maxAge: 0}).send({success: true})
-    })
+      res
+          .clearCookie('token', { maxAge: 0,
+            secure: process.env.NODE_ENV === "production" ? true: false,
+            sameSite: process.env.NODE_ENV === "production" ? "none" : "strict", })
+          .send({ success: true })
+   })
 
     app.get('/rooms', async (req, res)=>{
         const result = await roomCollection.find().toArray()
